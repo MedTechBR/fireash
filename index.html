@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="pt-BR" style="height: 100%">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Fire Ash" />
+    <meta name="theme-color" content="#101418" />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="apple-touch-icon" href="./ui/icone-180.png" />
+    <link rel="icon" type="image/png" href="./ui/icone-192.png" />
+    <title>Fire Ash Alvorada</title>
+    <style>
+      .Gamepad-controller.is-active { box-shadow: 0 0 50px currentColor; }
+    </style>
+    <link rel="stylesheet" href="./toque.css" />
+    <script src="./toque.js"></script>
+    <script type="module" crossorigin src="./assets/index-DveAJA3b.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-lP0ZUypO.css">
+  </head>
+  <body style="height: 100%; margin: 0; overflow: hidden; font-family: Roboto; color: #fff; background-color: #000;">
+    <script src="./coi-serviceworker.min.js"></script>
+    <script>
+      // mantém o service worker vivo enquanto arquivos grandes chegam (aviso da página original)
+      if (navigator.serviceWorker && navigator.serviceWorker.controller !== null) {
+        setInterval(() => { navigator.serviceWorker.controller.postMessage({ type: "heartbeat" }); }, 5000);
+      }
+    </script>
+    <div id="spinner-target" style="position: fixed; left: 0; top: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center;">
+      <div id="progressbar-target" style="display: none; width: 70px; height: 70px"></div>
+      <p id="user-activation-prompt" class="fa-caixa" style="display: none; padding: 4px 10px; font-size: 30px">Toque para jogar</p>
+    </div>
+    <canvas id="nostalgist-canvas" style="position: fixed; left: 0; top: 0; width: 100%; height: 100%"></canvas>
+  </body>
+</html>
