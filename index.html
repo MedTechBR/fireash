@@ -22,6 +22,11 @@
     <link rel="stylesheet" crossorigin href="./assets/index-lP0ZUypO.css">
   </head>
   <body style="height: 100%; margin: 0; overflow: hidden; font-family: Roboto; color: #fff; background-color: #000;">
+    <script>
+      // Safari (iPhone) não aceita COEP "credentialless", que o coi-serviceworker escolhe fora do Chrome/Firefox;
+      // sem isso a página nunca fica isolada e recarrega para sempre. Tudo aqui é do mesmo site: "require-corp" serve.
+      window.coi = { coepCredentialless: () => false };
+    </script>
     <script src="./coi-serviceworker.min.js"></script>
     <script>
       // keeps the service worker alive while big files arrive (from the original page)

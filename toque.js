@@ -307,6 +307,12 @@
 
   window.alvTeste = { aplicar: (e) => aplicar(e), mostrar: () => { $('touch').hidden = false; } }; // conferência de layout
 
+  window.alvErro = (msg) => {
+    const el = $('tq-entrada'); if (!el) return;
+    entrada('Could not start', msg, false);
+    el.querySelector('.barra').hidden = true;
+  };
+
   window.alvPronto = () => {
     $('tq-mais').hidden = false;
     if (!TOQUE) return;
