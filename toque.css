@@ -1,58 +1,65 @@
-/* Controles de toque do Fire Ash Alvorada, no visual dos menus do próprio Fire Ash:
-   moldura "choice 1" do jogo (Graphics/Windowskins), fonte Power Green, texto cinza com sombra.
-   Esquema: analógico flutuante à esquerda, botões à direita que mudam com o momento do jogo. */
+/* Controles de toque do Fire Ash Alvorada.
+   Ideia: no iPhone deitado o jogo (4:3) fica no meio e sobram duas faixas pretas; os controles moram nelas,
+   translúcidos, para cobrir o mínimo do jogo. Esquerda: analógico (e itens na batalha). Direita: A/B ou os golpes.
+   Letra: Power Green, a fonte do próprio jogo, em branco com sombra. */
 @font-face { font-family: "Power Green"; src: url("ui/power-green.ttf") format("truetype"); font-display: block; }
 :root { --st: env(safe-area-inset-top, 0px); --sb: env(safe-area-inset-bottom, 0px); --sl: env(safe-area-inset-left, 0px); --sr: env(safe-area-inset-right, 0px);
-  --tinta: #585850; --sombra: #a8b8b8; --contorno: #283030; --lilas: #706880; --lilas-esc: #484868; --papel: #f8f8f8; }
+  --vidro: rgba(14, 18, 26, .58); --vidro-on: rgba(255, 255, 255, .28); --fio: rgba(255, 255, 255, .55); }
 html, body { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent; overscroll-behavior: none; }
 
-.fa-caixa { box-sizing: border-box; border: 14px solid transparent; border-image: url("ui/moldura.png") 16 fill / 14px stretch; image-rendering: pixelated;
-  font: 22px/1 "Power Green", monospace; color: var(--tinta); text-shadow: 2px 0 var(--sombra), 0 2px var(--sombra), 2px 2px var(--sombra); -webkit-font-smoothing: none; }
+.px { font-family: "Power Green", monospace; color: #fff; text-shadow: 2px 2px 0 #1c2230; -webkit-font-smoothing: none; }
 
 #touch { position: fixed; inset: 0; z-index: 20; pointer-events: none; }
 #touch[hidden] { display: none; }
-#stick-zona { position: absolute; left: 0; bottom: 0; width: 46%; height: 80%; pointer-events: auto; touch-action: none; }
-#stick { position: absolute; left: calc(24px + var(--sl)); bottom: calc(24px + var(--sb)); width: 120px; height: 120px; border-radius: 50%; pointer-events: none; transform: scale(var(--tq-k, 1)); transform-origin: center;
-  background: rgba(248,248,248,.18); border: 4px solid var(--lilas); box-shadow: 0 0 0 3px var(--contorno), inset 0 0 0 3px var(--lilas-esc); opacity: .4; transition: opacity .15s; }
-#stick.on { opacity: .95; transition: none; }
-#stick-knob { position: absolute; left: 34px; top: 34px; width: 44px; height: 44px; border-radius: 50%; background: var(--papel); border: 4px solid var(--lilas); box-shadow: 0 0 0 3px var(--contorno); box-sizing: border-box; }
+#stick-zona { position: absolute; left: 0; bottom: 0; width: 45%; height: 70%; pointer-events: auto; touch-action: none; }
+#stick { position: absolute; left: calc(18px + var(--sl)); bottom: calc(18px + var(--sb)); width: calc(116px * var(--k, 1)); height: calc(116px * var(--k, 1)); border-radius: 50%; pointer-events: none;
+  background: rgba(255,255,255,.10); border: 2px solid var(--fio); box-sizing: border-box; opacity: .55; transition: opacity .15s; }
+#stick.on { opacity: 1; transition: none; }
+#stick-knob { position: absolute; left: 50%; top: 50%; width: 44%; height: 44%; margin: -22% 0 0 -22%; border-radius: 50%; background: rgba(255,255,255,.78); box-shadow: 0 2px 6px rgba(0,0,0,.35); }
 
-/* cacho da direita: posições em px a partir do canto inferior direito, encolhe em tela pequena */
-#tbtns { position: absolute; right: calc(8px + var(--sr)); bottom: calc(8px + var(--sb)); width: 0; height: 0; transform: scale(var(--tq-k, 1)); transform-origin: bottom right; pointer-events: none; }
-.tb { position: absolute; pointer-events: auto; opacity: .92; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; padding: 0; margin: 0; touch-action: none; white-space: nowrap; }
+#tbtns { position: absolute; inset: 0; pointer-events: none; }
+.tb { position: absolute; pointer-events: auto; box-sizing: border-box; margin: 0; padding: 0; touch-action: none; white-space: nowrap;
+  background: var(--vidro); border: 2px solid var(--fio); border-radius: 14px; -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px);
+  display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: calc(20px * var(--k, 1)); line-height: 1; }
 .tb.tq-off { display: none !important; }
-.tb.on { filter: brightness(.86); transform: translateY(2px); }
-.tb .rot { display: block; font-size: 22px; line-height: 18px; }
-.tb.move .rot { font-size: 20px; max-width: 100%; overflow: hidden; }
-.tb .sub { display: block; font-size: 16px; line-height: 14px; color: #787870; }
-.tb.letra .rot { font-size: 30px; line-height: 24px; }
+.tb.on { background: var(--vidro-on); }
+.tb.redondo { border-radius: 50%; }
+.tb .rot { display: block; }
+.tb .sub { display: block; font-size: .7em; margin-top: .15em; color: #d8dce8; }
+.tb.letra .rot { font-size: 1.75em; }
+.tb[data-acao=trocar], .tb[data-acao=pocao], .tb[data-acao=bola], .tb[data-acao=outraBola], .tb[data-acao=fugir] { font-size: calc(17px * var(--k, 1)); }
+#t-a { border-color: rgba(255, 214, 90, .9); }
 
-/* golpes: faixa da cor do tipo à esquerda, nome e PP; recarga escurece de baixo para cima */
-.tb.move { align-items: flex-start; padding-left: 8px; overflow: hidden; }
-.tb.move::before { content: ''; position: absolute; left: -6px; top: -6px; bottom: -6px; width: 6px; background: var(--tc, #888); }
-.tb.move::after { content: ''; position: absolute; left: -6px; right: -6px; bottom: -6px; height: calc(var(--cd, 0) * (100% + 12px)); background: rgba(40,48,48,.55); pointer-events: none; }
-.tb.move .tipo { font-size: 16px; line-height: 14px; color: var(--tc); text-shadow: 1px 1px rgba(40,48,48,.35); }
-.tb.move.sem-pp .rot, .tb.move.sem-pp .tipo { color: #a8a8a0; }
-.tb.move .pp { position: absolute; right: 0; bottom: 0; font-size: 16px; line-height: 14px; color: #6878a8; }
+/* golpes: fio da cor do tipo à esquerda, nome, tipo e PP; a recarga é uma barra que esvazia embaixo */
+.tb.move { align-items: stretch; justify-content: center; padding: 0 .45em 0 .7em; overflow: hidden; }
+.tb.move::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: .32em; background: var(--tc, #888); }
+.tb.move .rot { overflow: hidden; text-overflow: clip; }
+.tb.move .linha { display: flex; justify-content: space-between; gap: .3em; margin-top: .25em; font-size: .72em; }
+.tb.move .tipo { color: var(--tc); filter: brightness(1.35) saturate(.9); }
+.tb.move .pp { color: #c9d2e6; }
+.tb.move .rec { position: absolute; left: 0; bottom: 0; height: 3px; width: calc(var(--cd, 0) * 100%); background: #fff; opacity: .85; }
+.tb.move.esfria { background: rgba(14, 18, 26, .78); }
+.tb.move.esfria .rot, .tb.move.sem-pp .rot { color: #8d93a3; }
 
-/* menu do aparelho (save e arquivo do jogo) */
-#tq-mais { position: fixed; left: calc(6px + var(--sl)); top: calc(6px + var(--st)); width: 64px; height: 44px; z-index: 21; display: grid; place-items: center; padding: 0; font-size: 18px; }
+/* menu do aparelho (saves e arquivo do jogo) */
+#tq-mais { position: fixed; left: calc(8px + var(--sl)); top: calc(8px + var(--st)); width: 46px; height: 34px; z-index: 21; font-size: 18px; }
 #tq-mais[hidden] { display: none; }
-#tq-painel { position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 30; width: min(380px, 92vw); max-height: 92vh; overflow: auto; padding: 6px 8px; display: flex; flex-direction: column; gap: 10px; }
+.caixa-vidro { background: rgba(14, 18, 26, .92); border: 2px solid var(--fio); border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,.5); }
+#tq-painel { position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 30; width: min(360px, 92vw); max-height: 92vh; overflow: auto; box-sizing: border-box; padding: 16px 18px; display: flex; flex-direction: column; gap: 6px; font-size: 20px; }
 #tq-painel[hidden] { display: none; }
-#tq-painel h2 { margin: 0; font: inherit; font-size: 26px; }
-#tq-painel p { margin: 0; font-size: 19px; line-height: 20px; }
-#tq-painel button { all: unset; box-sizing: border-box; display: flex; align-items: center; gap: 8px; padding: 6px 4px; font: inherit; font-size: 22px; cursor: pointer; }
-#tq-painel button::before { content: ''; width: 12px; height: 28px; background: url("ui/seta.png") center / 12px 28px no-repeat; image-rendering: pixelated; visibility: hidden; }
-#tq-painel button:hover::before, #tq-painel button:focus::before, #tq-painel button:active::before { visibility: visible; }
+#tq-painel h2 { margin: 0 0 4px; font: inherit; font-size: 26px; }
+#tq-painel p { margin: 0 0 6px; font-size: 18px; line-height: 20px; color: #d8dce8; }
+#tq-painel button { all: unset; box-sizing: border-box; padding: 10px 12px; border-radius: 10px; font: inherit; color: inherit; text-shadow: inherit; cursor: pointer; background: rgba(255,255,255,.08); }
+#tq-painel button:active { background: var(--vidro-on); }
 
 /* tela de entrada (escolher o arquivo do jogo / baixar) */
-#tq-entrada { position: fixed; inset: 0; z-index: 40; display: grid; place-items: center; background: #101418; padding: 20px; box-sizing: border-box; }
+#tq-entrada { position: fixed; inset: 0; z-index: 40; display: grid; place-items: center; background: #0d1016; padding: 20px; box-sizing: border-box; }
 #tq-entrada[hidden] { display: none; }
-#tq-entrada .fa-caixa { width: min(440px, 92vw); padding: 8px 10px; display: flex; flex-direction: column; gap: 12px; }
+#tq-entrada .caixa-vidro { width: min(440px, 92vw); padding: 18px 20px; box-sizing: border-box; display: flex; flex-direction: column; gap: 12px; font-size: 20px; }
 #tq-entrada h1 { margin: 0; font: inherit; font-size: 28px; }
-#tq-entrada p { margin: 0; font-size: 20px; line-height: 21px; }
-#tq-entrada .barra { height: 10px; background: #d0d0c8; box-shadow: 0 0 0 2px var(--contorno); }
-#tq-entrada .barra i { display: block; height: 100%; width: 0; background: #58c058; }
-#tq-entrada label, #tq-entrada button { align-self: center; cursor: pointer; font: inherit; font-size: 22px; }
+#tq-entrada p { margin: 0; line-height: 21px; color: #d8dce8; }
+#tq-entrada .barra { height: 8px; border-radius: 4px; background: rgba(255,255,255,.15); overflow: hidden; }
+#tq-entrada .barra i { display: block; height: 100%; width: 0; background: #ffd65a; }
+#tq-entrada label { align-self: center; cursor: pointer; padding: 10px 18px; border-radius: 12px; background: rgba(255, 214, 90, .95); color: #1c2230; text-shadow: none; }
 #tq-entrada input[type=file] { display: none; }
+#user-activation-prompt { padding: 10px 18px; font-size: 26px !important; }

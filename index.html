@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="pt-BR" style="height: 100%">
+<html lang="en" style="height: 100%">
   <head>
     <meta charset="UTF-8" />
     <meta name="robots" content="noindex, nofollow" />
@@ -24,14 +24,14 @@
   <body style="height: 100%; margin: 0; overflow: hidden; font-family: Roboto; color: #fff; background-color: #000;">
     <script src="./coi-serviceworker.min.js"></script>
     <script>
-      // mantém o service worker vivo enquanto arquivos grandes chegam (aviso da página original)
+      // keeps the service worker alive while big files arrive (from the original page)
       if (navigator.serviceWorker && navigator.serviceWorker.controller !== null) {
         setInterval(() => { navigator.serviceWorker.controller.postMessage({ type: "heartbeat" }); }, 5000);
       }
     </script>
     <div id="spinner-target" style="position: fixed; left: 0; top: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center;">
       <div id="progressbar-target" style="display: none; width: 70px; height: 70px"></div>
-      <p id="user-activation-prompt" class="fa-caixa" style="display: none; padding: 4px 10px; font-size: 30px">Toque para jogar</p>
+      <p id="user-activation-prompt" class="caixa-vidro px" style="display: none">Tap to play</p>
     </div>
     <canvas id="nostalgist-canvas" style="position: fixed; left: 0; top: 0; width: 100%; height: 100%"></canvas>
   </body>
