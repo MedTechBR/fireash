@@ -10,6 +10,20 @@
   const q = new URLSearchParams(location.search);
   const TOQUE = q.get('toque') === '1' || (q.get('toque') !== '0' && (matchMedia('(pointer: coarse)').matches || navigator.maxTouchPoints > 1));
   const $ = (id) => document.getElementById(id);
+  const inicio = Date.now();
+
+  // Registro para diagnóstico no celular (sem console): últimas mensagens do motor e erros da página.
+  const REG = [];
+  const anota = (tipo, args) => {
+    const t = [...args].map((a) => (a instanceof Error ? a.message : typeof a === 'object' ? (() => { try { return JSON.stringify(a); } catch { return String(a); } })() : String(a))).join(' ');
+    REG.push(`[${(performance.now() / 1000).toFixed(1)}] ${tipo} ${t}`.slice(0, 300));
+    if (REG.length > 200) REG.shift();
+    const ult = $('tq-carga-ult'); if (ult && tipo !== 'log') ult.textContent = t.slice(0, 140);
+  };
+  for (const k of ['log', 'info', 'warn', 'error']) { const orig = console[k].bind(console); console[k] = (...a) => { anota(k, a); orig(...a); }; }
+  addEventListener('error', (e) => anota('ERRO', [e.message + ' @' + (e.filename || '').split('/').pop() + ':' + e.lineno]));
+  addEventListener('unhandledrejection', (e) => anota('ERRO', [String(e.reason && (e.reason.message || e.reason))]));
+  window.alvRegistro = () => REG.join('\n');
 
   // ---------------- armazenamento do navegador (OPFS) ----------------
   async function pasta(caminho, criar = true) {
@@ -248,7 +262,8 @@
   async function lerPonte() {
     try {
       const f = await arquivo(PASTA_SAVE, 'alv_ponte.json');
-      if (f) { const t = await f.text(); if (t && t !== ultimo) { ultimo = t; aplicar(JSON.parse(t)); } }
+      // recado de uma partida anterior não vale (mostrava os botões da batalha velha)
+      if (f && f.lastModified > inicio) { const t = await f.text(); if (t && t !== ultimo) { ultimo = t; aplicar(JSON.parse(t)); } }
     } catch {}
     setTimeout(lerPonte, 120);
   }
@@ -279,6 +294,7 @@
       if (a === 'fechar') p.hidden = true;
       if (a === 'exportar') { const n = await exportarSaves(); msg.textContent = n ? `${n} save file(s) downloaded.` : 'No save yet.'; }
       if (a === 'importar') $('tq-saves').click();
+      if (a === 'registro') { const r = $('tq-reg'); r.hidden = !r.hidden; r.textContent = window.alvRegistro().split('\n').slice(-60).join('\n'); }
       if (a === 'jogo') { await apagar([], 'fireash.mkxpz'); try { localStorage.removeItem('alv-versao'); } catch {} location.reload(); }
     });
     $('tq-saves').addEventListener('change', async (e) => {
@@ -295,10 +311,12 @@
       <div id="tq-entrada" hidden><div class="caixa-vidro px"><h1></h1><p></p><div class="barra"><i></i></div>
         <label for="tq-arq">Choose file</label><input id="tq-arq" type="file"></div></div>
       <div id="touch" hidden><div id="stick-zona"></div><div id="stick"><div id="stick-knob"></div></div><div id="tbtns"></div></div>
+      <div id="tq-carga" class="caixa-vidro px" hidden><b>Starting the game...</b><span id="tq-carga-ult"></span></div>
       <button id="tq-mais" class="tb px" hidden>...</button>
       <div id="tq-painel" class="caixa-vidro px" hidden><h2>Fire Ash Alvorada</h2><p></p>
         <button data-a="exportar">Export save</button><button data-a="importar">Import save</button>
-        <button data-a="jogo">Change game file</button><button data-a="fechar">Close</button>
+        <button data-a="jogo">Change game file</button><button data-a="registro">Show log</button><button data-a="fechar">Close</button>
+        <pre id="tq-reg" hidden></pre>
         <input id="tq-saves" type="file" multiple hidden></div>`);
     for (const k of ['a', 'b', 'correr', 'g1', 'g2', 'g3', 'g4', 'esquiva', 'trocar', 'pocao', 'bola', 'outraBola', 'fugir']) criarBotao(k);
     painel();
@@ -313,7 +331,22 @@
     el.querySelector('.barra').hidden = true;
   };
 
+  function carregando() {
+    const el = $('tq-carga'); el.hidden = false;
+    const t0 = performance.now();
+    const passo = async () => {
+      const f = await arquivo(PASTA_SAVE, 'alv_ponte.json');
+      if (f && f.lastModified > inicio) { el.hidden = true; return; }
+      const toqueInicial = $('user-activation-prompt');
+      el.hidden = !!toqueInicial && toqueInicial.style.display !== 'none';  // não cobre o "Tap to play"
+      el.querySelector('b').textContent = `Starting the game... ${Math.round((performance.now() - t0) / 1000)}s`;
+      setTimeout(passo, 1000);
+    };
+    passo();
+  }
+
   window.alvPronto = () => {
+    carregando();
     $('tq-mais').hidden = false;
     if (!TOQUE) return;
     $('touch').hidden = false;
